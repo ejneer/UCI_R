@@ -1,0 +1,108 @@
+---
+title: "R Notebook"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+# Problem 1
+It is known that the following Leibniz series converages to $\frac{\pi}{4}$ as 
+$n\to\infty$:
+$$
+S(n) = \sum_{k=0}^{n} (-1) ^ k \frac{1}{2k+1}
+$$
+Plot the difference between $\frac{\pi}{4}$ sum $S(n)$ versus $n$ for
+$0 \leq n \leq 200$.
+
+```{r}
+calculate_S <- function(n) {
+  total <- 0
+  for(k in 0:n){
+    total <- total + (-1) ** k * (1 / (2*k+1))
+  }
+  return(total)
+}
+
+n <- 0:200
+S = sapply(n, calculate_S)
+plot(n, S - pi/4)
+``` 
+
+# Problem 2
+The Virginia Cooperative Extension reports that the mean weight of yearling
+Angus steers is 1,152 pounds. Suppose that weights of all such animals can be
+described by a Normal model with a standard deviation of 84 pounds.
+
+Plot the normal distribution curve ($\mu = 1152$ and $\sigma = 84$).  Fill the
+distribution curve with your choice of color where:
+  a. Weight is over 1250 pounds
+  b. Weight is under 1200 pounds
+  c. Weight is between 1000 and 1100 pounds
+  
+```{r}
+x <- seq(900, 1400, by = 10)
+data <- dnorm(x, mean=1152, sd=84)
+plot(x, data, type="l")
+
+polygon(
+  c(x[x>=1250], 1250),
+  c(data[x>=1250], min(data)),
+  col="red"
+)
+polygon(
+  c(x[x<=1200], 1200),
+  c(data[x<=1200], min(data)),
+  col="blue"
+)
+polygon(
+  c(1000, x[x>=1000 & x<=1100], 1100),
+  c(min(data), data[x>=1000 & x<=1100], min(data)),
+  col="green"
+)
+```
+
+# Problem 3
+Read the "temperature.txt" file.  This file contains the following data:
+  * High and low temperature (degree centigrade)
+  * Rainfall (cm)
+  * Month (from 1 to 12)
+  * Year (for 20 years - from 1987 - 2005)
+  
+Create a boxplot of 'high temperature' using 'month' as a factor variable.
+```{r}
+temps <- read.table("temperatures.txt", header=TRUE)
+month <- factor(temps$month)
+plot(month, temps$temperature)
+```
+
+# Problem 4
+In a binomial experiment with $n$ trials, the probability of success is $p$ in
+each trial.  The probability of exactly $x$ success in $n$ trials is given
+by the following expression:
+$$
+P(x:successes) = (_nC_xp^x(1-p)^{(n-x)})
+$$
+Suppose the probability of success $(p) = 0.7$ (probability of failure is
+$(1 - 0.7) = 0.3$).  Therefore, in 8 trials ($n = 8$), the probability of
+exactly 5 successes ($x=5$) is:
+$$
+=_8C_5(0.7)^5(0.3)^{(6-5)} = 0.25412
+$$
+Vary the probability of success from 0.1 to 0.9 and generate the following 9
+barplots in R that represent the probability of$x$ successes in $8$ trials.
+```{r}
+prob_succ <- function(num_succ, prob) {
+  return(
+    choose(8, num_succ) * prob ** num_succ * 0.3 ** (8-num_succ)
+  )
+}
+par(mfrow=c(3,3))
+for (p in 1:9){
+  c = 1:8
+  barplot(
+    sapply(c, prob_succ, prob=p/10), 
+    xlab="Trials",
+    ylab="Probability"
+    )
+}
+
+```

@@ -1,0 +1,148 @@
+---
+title: "Homework 2"
+author: "Eric Neer"
+date: "October 1, 2017"
+output:
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Problem 1
+Given x and y
+```{r}
+x <- 5 + 8i
+y <- -6 + 7i
+```
+Evaluate the following expressions in R.
+```{r}
+  (u <- x + y)
+  (v <- x * y)
+  (w <- x / y)
+  (z <- exp(x))
+  (r <- sqrt(y))
+  (s <- x * y ** 2)
+```
+## Problem 2
+Use R to compute the following expressions.
+```{r}
+  (a2 <- (3 + 6i)*(-7 - 9i))
+  (b2 <- (5 + 4i) / (5 - 4i))
+  (c2 <- 3 / 2i)
+```
+## Problem 3
+Use R to calculate the following expressions.
+```{r}
+  (a3 <- exp(-2.1) ** 3 + 3.47 * log(14) + 287 ** (1/4))
+  (b3 <- 3.4 ** 7 * log(14) + 287 ** (1/4))
+  (c3 <- cos((4.12 * pi) / 6) ** 2)
+  (d3 <- cos((4.12 * pi) / 6) ** 2)
+```
+## Problem 4
+Suppose that x = 6. Find the results of the following operations by hand 
+and use R to check your results.
+```{r}
+  x <- 6
+  (a4 <- (x < 10))
+  (b4 <- (x == 10))
+  (c4 <- (x >= 4))
+  (d4 <- (x != 7))
+```
+## Problem 5
+Find the results of the following operations by hand and use R to check
+your results.
+
+```{r}
+  (a5 <- 6 > 3 + 8)
+  (b5 <- 6 + 3 > 8)
+  (c5 <- 4 > (2 + 9))
+  (d5 <- (4 < 7) + 3)
+  (e5 <- 4 < 7 + 3)
+  (f5 <- (4 < 7) * 5)
+  (g5 <- 4 < (7 * 5))
+  (h5 <- 2 / 5 >= 5)
+```
+## Problem 6
+Enter this matrix in R:
+$$
+A = \left[\begin{array}
+{ccc}
+3 & 7 & -4 & 12 \\
+-5 & 9 & 10 & 2 \\
+6 & 13 & 8 & 11 \\
+15 & 5 & 4 & 1
+\end{array}\right]
+$$
+
+```{r}
+  (A <- matrix(
+        c(
+          3, 7, -4, 12,
+          -5, 9, 10, 2,
+          6, 13, 8, 11,
+          15, 5, 4, 1
+          ),
+        nrow=4,
+        byrow=TRUE
+  ))
+```
+a) Create a vector V consisting of the elements in the second column of A.
+```{r}
+(v <- A[,2])
+```
+b) Create a vector W consisting of the elements in the second row of A.
+```{r}
+(w <- A[2,])
+```
+## Problem 7
+Store 20 random numbers with normal distribution and mean of 10 and
+standard deviation of 5 in a vector. Sort the vector. Remove the smallest 2
+and the largest 2 elements from this vector.
+```{r}
+  (B <- rnorm(20, mean=10, sd=5))
+  
+  trim <- function(x) {
+    last_idx = length(x)
+    return(sort(x)[-c(1, 2, last_idx-1, last_idx)])
+  }
+  
+  (trim(B))
+```
+## Problem 8
+Read the 'temperature.txt' file. This file contains the following data.
+   - High and low temperature (degree centigrade)
+   - Rainfall (centimeters)
+   - Month (from 1 to 12)
+   - Year (for 20 years - from 1987 - 2005)
+
+ Compute the following statistics of temperature and rainfall data.
+   Mean, Max, Min, Standard deviation, Variance, Range
+```{r}
+  temps <- read.table("temperatures.txt", header=TRUE)
+  funcs <- list(mean=mean, max=max, min=min, sd=sd, var=var)
+  (temp_stats <- sapply(funcs, mapply, list(temps$temperature, temps$rain)))
+  (range_temp <- range(temps$temperature))
+  (range_rain <- range(temps$rain))
+```
+## Problem 9
+Using the text file of problem 8, compute the yearly average temperature
+for all the years (from 1987 - 2005). Which was the coldest year (year in
+which the average temperature was the lowest) and which was the warmest?
+```{r}
+  (yearly_avg <- tapply(temps$temperature, temps$yr, mean))
+  (coldest_yr <- names(sort(yearly_avg)[1]))
+  (warmest_yr <- names(sort(yearly_avg)[length(yearly_avg)]))
+```
+## Problem 10
+Store 100 random numbers with normal distribution and mean of 50 and
+standard deviation of 50 in a vector. Plot this histogram. (you will see the
+bell shaped Gaussian curve). Which number is the closest to the number 100?
+```{r}
+  C <- rnorm(100, mean=50, sd=50)
+  hist(C)
+  
+  # get the index of the closest number and the closest number itself
+  (closest_idx <- which (abs(C-100) == min(abs(C-100))))
+  (closest_num <- C[closest_idx])
+```
