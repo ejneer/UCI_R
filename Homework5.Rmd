@@ -1,0 +1,185 @@
+---
+title: "R Notebook"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+# Problem 1
+The half-life of a radioactive substance is the time it takes to decay by
+one-half.  The half-life of carbon 14, which is used for dating previously
+living things, is 5500 years.  When an organism dies, it stops accumulating
+carbon 14.  The carbon 14 present at the time of death decays with time.  Let
+$\frac{C(t)}{C(0)}$ be the fraction of carbon 14 remaining at time $t$.  In
+radioactive carbon dating, scientists usually assume that the remaining fraciton
+decays exponentially according to the following formula:
+$$
+\frac{C(t)}{C(0)} = e^{-bt}
+$$
+
+  a.  Use the half-life of carbon 14 to find the value of the parameter $b$ and
+  plot the function.
+  
+```{r}
+# at time t = 5500, half of the carbon remains.  i.e. C(5500)/C(0) = 0.5
+b <- log(0.5) / -5500
+t <- seq(0, 5e4, 100)
+carbon_fraction <- function(t) {
+  return(exp(-b*t))
+}
+plot(
+  t, 
+  carbon_fraction(t), 
+  type="l", 
+  ylab="Carbon Fraction Remaining",
+  xlab="Time Elapsed (years)"
+  )
+```
+  
+  b.  If 90% of the original carbon 14 remains, estimate how long ago the 
+  organism died.
+
+```{r}
+# C(t) = 0.9, b found in part a
+years_since_death <- log(0.9) / -b
+```
+
+# Problem 2
+Given the matrices:
+
+$$
+A = \left[\begin{array}
+{ccc}
+4 & -2 & 1 \\
+6 & 8 & -5 \\
+7 & 9 & 10
+\end{array}\right]
+$$
+$$
+B = \left[\begin{array}
+{ccc}
+6 & 9 & -4 \\
+7 & 5 & 3 \\
+-8 & 2 & 1 
+\end{array}\right]
+$$
+$$
+C = \left[\begin{array}
+{ccc}
+-4 & -5 & 2 \\
+10 & 6 & 1 \\
+3 & -9 & 8
+\end{array}\right]
+$$
+use R to verify:
+
+  a.  The associative property $\bf{A(B+C) = AB+AC}$
+```{r}
+A <- matrix(c(4, -2, 1, 6, 8, -5, 7, 9, 10), byrow=TRUE, nrow=3)
+B <- matrix(c(6, 9, -4, 7, 5, 3, -8, 2, 1), byrow=TRUE, nrow=3)
+C <- matrix(c(-4, -5, 2, 10, 6, 1, 3, -9, 8), byrow=TRUE, nrow=3)
+
+identical(A %*% (B + C), A %*% B + A %*% C)
+```
+
+  b. The distributive property
+```{r}
+identical((A %*% B) %*% C, A %*% (B %*% C))
+```
+
+# Problem 3
+Suppose it is known that the graph of the following function
+$$
+y = ax^3 + bx^2 + cx + d
+$$
+passes through four given points $(x_i, y_i)$ where $i = 1, 2, 3, 4$.
+
+Write a user defuned function that accepts these four points as input and
+computes the coefficients $a, b, c, d$.  The function should solve four linear
+equations in terms of the four unknown coefficients.  Test your function for the
+case where $(x_i, y_i) = $ (-2,-20), (0, 4), (2, 68) and (4, 508).
+
+The answer is $a = 7$, $b = 5$, $c = -6$, $d = 4$.
+```{r}
+calculate_coefficients <- function(point1, point2, point3, point4) {
+  A <- matrix(c(
+    point1[1]**3, point1[1]**2, point1[1], 1,
+    point2[1]**3, point2[1]**2, point2[1], 1,
+    point3[1]**3, point3[1]**2, point3[1], 1,
+    point4[1]**3, point4[1]**2, point4[1], 1
+  ), nrow=4, byrow=TRUE)
+
+  b <- matrix(c(
+    point1[2], point2[2], point3[2], point4[2]),
+    nrow=4
+  )
+  return(solve(A, b))
+}
+p1 <- c(-2, -20)
+p2 <- c(0, 4)
+p3 <- c(2, 68)
+p4 <- c(4, 508)
+calculate_coefficients(p1, p2, p3, p4)
+```
+
+# Problem 4
+Use a random number generator to produce 1000 uniformly distributed numbers with
+a mean of 10, a minimum of 2, and a maximum of 18.  Obtain the mean and the
+histogram of these numbers, and discuss whether they appear uniformly
+distributed with the desired mean.
+
+```{r}
+r_uni <- runif(1000, min=2, max=18)
+mean(r_uni)
+```
+```{r}
+hist(r_uni)
+```
+
+## Discussion
+The dataset is not uniformly distributed nor is the mean 10 as desired.  This
+is due to the fact that this is only a random sample of 1000 numbers
+($n_{sample} = 1000$) from a uniform distribution.  As more data points are
+taken, the histogram will show a more evenly spread distribution and the mean
+will approach 10.  In the limiting case of $n_{sample} \to \infty$, the
+histogram would show a perform uniform distribution and the mean would be
+exactly 10.
+
+# Problem 5
+
+Use a random number generator to produce 1,000 normally distributed numbers with
+a mean of 20 and a standard deviation of 4. Obtain the mean, standard deviation,
+and the histogram of these numbers, and discuss whether they appear normally
+distributed with the desired mean and standard deviation.
+
+```{r}
+r_norm <- rnorm(1000, mean=20, sd=4)
+mean(r_norm)
+```
+```{r}
+hist(r_norm)
+```
+
+## Discussion
+
+Similar to the uniform distribution, only a 1000 point sample is shown, thus
+the histogram and mean do not reflect a perfect normal distribution.
+
+# Problem 6
+The mean of the sum (or difference) of two independent random variables equals
+the sum (or difference) of their means, but the variance is always the sum of
+the two variances.  
+
+Use random number generation to verify this statement for the case where
+$z = x + y$, where $x$ and $y$ are independent and normally distributed random
+variables.  The mean and the variance of $x$ and $y$ are given below.
+$$
+\mu_x = 8 \quad \sigma_x^2 = 2 \\ 
+\mu_y = 15 \quad \sigma_y^2 = 4
+$$
+```{r}
+x <- rnorm(1e4, mean=8, sd=sqrt(2))
+y <- rnorm(1e4, mean=15, sd=sqrt(4))
+mean(x+y) == mean(x) + mean(y)
+var(x+y) == var(x) + var(y)
+```
