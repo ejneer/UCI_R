@@ -1,0 +1,106 @@
+---
+title: "Homework 6"
+author: "Eric Neer"
+output:
+  pdf_document: 
+    fig_caption: yes
+    keep_tex: yes
+  html_notebook: default
+header-includes: \usepackage{float}
+---
+
+# Linear Regression
+The values of 2 variables X and Y are given below. Here X is the predictor
+variable and Y is the response variable.
+
+```{r}
+X <- c(25, 30, 35, 40, 45)
+Y <- c(5, 260, 480, 745, 1100)
+```
+## Problem 1
+Compute the correlation between X and Y variables. Verify your answer using
+Excel.
+```{r}
+correlation = cor(X,Y)
+```
+
+## Problem 2
+Compute regression equation using Excel by using a scatter plot. Compute the
+value of RSquare.  
+
+\begin{figure}[h!]
+  \caption{Excel Chart Generated Using X, Y Data}
+  \centering
+    \includegraphics[]{../Homework_6/p2.png}
+\end{figure}
+  
+## Problem 3
+Compute regression equation using the following parameters:
+* Correlation between X and Y variables
+* Mean and the standard deviation of X and Y variables
+```{r}
+slope = correlation * sd(Y) / sd(X)
+intercept = mean(Y) - slope * mean(X)
+```
+Thus, the regression equation is (using $y = mx + b$):
+$$
+y = 53.5x - 1354.5
+$$
+
+## Problem 4
+Compute regression equation using Excel/Solver by minimizing the square of the
+difference. Compute the values of J, S, and RSquare.  
+
+\begin{figure}[h!]
+  \caption{Parameters Calculated with Excel}
+  \centering
+    \includegraphics[]{../Homework_6/p4.png}
+\end{figure}
+
+
+## Problem 5
+Compute regression equation using R software.
+```{r}
+result <- lm(Y~X)
+```
+
+## Problem 6
+
+Prediction: Predict the value of Y variable when the value of X = 40 and 56
+using the regression equation computed.
+```{r}
+new.df <- data.frame(X=c(40, 56))
+predict(result, new.df)
+```
+# Multiple Regression
+
+## Problem 7
+Compute regression equation using Excel/Solver by minimizing the square of the
+difference. Compute the value of RSquare.
+
+\begin{figure}[h!]
+  \caption{Parameters Calculated with Excel}
+  \centering
+    \includegraphics[]{../Homework_6/p7.png}
+\end{figure}
+
+## Problem 8
+Compute regression equation using R software. Compute the value of RSquare.
+```{r}
+p8data <- read.csv("../Homework_6/P7-9RawData.csv", header=TRUE)
+attach(p8data)
+result <- lm(
+  Revenue ~ NewVisits + PagesPerSession + AvgSessionDuration
+  )
+summary(result)$r.squared
+```
+
+## Problem 9
+Predict the revenues for a period where:
+  * New Vists = 32
+  * Page per Session = 7
+  * Average Session Duration = 457
+```{r}
+new.df <- data.frame(NewVisits=32, PagesPerSession=7, AvgSessionDuration=457)
+predict(result, new.df)
+```
