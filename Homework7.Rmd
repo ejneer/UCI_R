@@ -1,0 +1,46 @@
+---
+title: "Homework 7"
+author: "Eric Neer"
+output:
+  pdf_document: default
+  html_notebook: default
+  html_document: default
+---
+# Problem 1
+Given data captured by Analytics service of a website, write R code to predict 
+if the people with the following characteristics will visit again or not. 
+Compute probabilities for each case. If the probability is greater than 0.5, 
+visitor will visit again.
+
+Load in the training and testing data, removing the primary key of each record.
+```{r}
+library(e1071)
+
+train <- read.csv("HW07Train.csv")
+train <- train[
+  c("Previously_Visited", "SessionLength", "PageViews", "Will_Visit_Again")
+  ]
+
+test <- read.csv("HW07Test.csv")
+test <- test[
+  c("Previously_Visited", "SessionLength", "PageViews")
+  ]
+```
+
+Use the naiveBayes class to generate a classifier for whether or not a visitor
+will visit the given website again.
+```{r}
+classifier <- naiveBayes(train, train$Will_Visit_Again, laplace=0)
+predictions <- predict(classifier, test, type="raw")
+predictions
+```
+\begin{center}
+  \begin{tabular}{c c c | c c | c}
+    Previously Visited & Session Length & Page Views & No & Yes & Prediction \\
+    \hline
+    No & Short & Low & 0.624 & 0.376 & No \\ 
+    Yes & Short & Medium & 0.740 & 0.260 & No \\ 
+    Yes & Average & Medium & 0.850 & 0.150 & No \\ 
+    Yes & Long & High & 0.453 & 0.547 & Yes \\ 
+  \end{tabular}
+\end{center}
